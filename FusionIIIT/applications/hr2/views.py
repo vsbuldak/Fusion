@@ -38,9 +38,9 @@ def edit_employee_details(request, id):
             form.save()
             conf_form.save()
             try:
-                ee = ExtraInfo.objects.get(pk=id)
-                ee.user_status = "PRESENT"
-                ee.save()
+                edit_employee = ExtraInfo.objects.get(pk=id)
+                edit_employee.user_status = "PRESENT"
+                edit_employee.save()
 
             except:
                 pass
@@ -83,9 +83,9 @@ def hr_admin(request):
         else:
             emp = ExtraInfo.objects.all()
             emp = emp.filter(user_type="faculty")
-        empPresent = emp.filter(user_status="PRESENT")
-        empNew = emp.filter(user_status="NEW")
-        context = {'emps': emp, "empPresent": empPresent, "empNew": empNew}
+        emp_present = emp.filter(user_status="PRESENT")
+        emp_new = emp.filter(user_status="NEW")
+        context = {'emps': emp, "emp_present": emp_present, "emp_new": emp_new}
         return render(request, template, context)
     else:
         return HttpResponse('Unauthorized', status=401)
@@ -107,10 +107,10 @@ def service_book(request):
     appraisal_form = EmpAppraisalForm.objects.filter(
         extra_info=extra_info).order_by('-year')
     pf = extra_info.id
-    workAssignemnt = WorkAssignemnt.objects.filter(
+    work_assignemnt = WorkAssignemnt.objects.filter(
         extra_info_id=pf).order_by('-start_date')
 
-    empprojects = emp_research_projects.objects.filter(
+    emp_projects = emp_research_projects.objects.filter(
         pf_no=pf).order_by('-start_date')
     visits = emp_visits.objects.filter(pf_no=pf).order_by('-entry_date')
     conferences = emp_confrence_organised.objects.filter(
@@ -121,13 +121,13 @@ def service_book(request):
         pf_no=pf).order_by('-date_entry')
     context = {'lienServiceBooks': lien_service_book, 'deputationServiceBooks': deputation_service_book, 'otherServiceBooks': other_service_book,
                'appraisalForm': appraisal_form,
-               'empproject': empprojects,
+               'empproject': emp_projects,
                'visits': visits,
                'conferences': conferences,
                'awards': awards,
                'thesis': thesis,
                'extrainfo': extra_info,
-               'workAssignment': workAssignemnt
+               'workassignment': work_assignemnt
                }
 
     return HttpResponseRedirect("/eis/profile/")
@@ -146,10 +146,10 @@ def view_employee_details(request, id):
     appraisal_form = EmpAppraisalForm.objects.filter(
         extra_info=extra_info).order_by('-year')
     pf = extra_info.id
-    workAssignemnt = WorkAssignemnt.objects.filter(
+    work_assignemnt = WorkAssignemnt.objects.filter(
         extra_info_id=pf).order_by('-start_date')
 
-    empprojects = emp_research_projects.objects.filter(
+    emp_projects = emp_research_projects.objects.filter(
         pf_no=pf).order_by('-start_date')
     visits = emp_visits.objects.filter(pf_no=pf).order_by('-entry_date')
     conferences = emp_confrence_organised.objects.filter(
@@ -181,12 +181,12 @@ def view_employee_details(request, id):
     template = 'hr2Module/viewdetails.html'
     context = {'lienServiceBooks': lien_service_book, 'deputationServiceBooks': deputation_service_book, 'otherServiceBooks': other_service_book, 'user': extra_info.user, 'extrainfo': extra_info,
                'appraisalForm': appraisal_form,
-               'empproject': empprojects,
+               'empproject': emp_projects,
                'visits': visits,
                'conferences': conferences,
                'awards': awards,
                'thesis': thesis,
-               'workAssignment': workAssignemnt
+               'workassignment': work_assignemnt
 
                }
     context.update(response)
@@ -255,14 +255,14 @@ def administrative_profile(request, username=None):
 
     response.update({'cpda': False, 'ltc': False,
                      'appraisal': True, 'leave': False})
-    workAssignemnt = WorkAssignemnt.objects.filter(
+    work_assignemnt = WorkAssignemnt.objects.filter(
         extra_info_id=pf).order_by('-start_date')
 
     context = {'user': user,
                'pf': pf,
                'lienServiceBooks': lien_service_book, 'deputationServiceBooks': deputation_service_book, 'otherServiceBooks': other_service_book,
                'extrainfo': extra_info,
-               'workAssignment': workAssignemnt
+               'workassignment': work_assignemnt
                }
 
     context.update(response)
@@ -275,25 +275,25 @@ def add_new_user(request):
     template = 'hr2Module/add_new_employee.html'
 
     if request.method == "POST":
-        form = NewUserForm(request.POST)
-        eform = AddExtraInfo(request.POST)
+        form_newuser = NewUserForm(request.POST)
+        extrainfo_form = AddExtraInfo(request.POST)
         if form.is_valid():
-            user = form.save()
+            user = form_newuser.save()
             messages.success(request, "New User added Successfully")
-        elif not form.is_valid:
-            print(form.errors)
+        elif not form_newuser.is_valid:
+            print(form_newuser.errors)
             messages.error(request,"Some error occured please try again later")
 
-        elif eform.is_valid():
-            eform.save()
+        elif extrainfo_form.is_valid():
+            extrainfo_form.save()
             messages.success(request, "Extra info of user saved successfully")
-        elif not eform.is_valid:
+        elif not extrainfo_form.is_valid:
         
-            print(eform.errors)
+            print(extrainfo_form.errors)
             messages.error(request,"Some error occured please try again later")
 
-    form = NewUserForm
-    eform = AddExtraInfo
+    form_newuser = NewUserForm
+    extrainfo_form = AddExtraInfo
 
     try:
         employee = ExtraInfo.objects.all().first()
@@ -312,7 +312,7 @@ def add_new_user(request):
     #         pass
 
     # form = EditServiceBookForm(initial={'extra_info': employee.id})
-    context = {'employee': employee, "register_form": form, "eform": eform
+    context = {'employee': employee, "register_form": form_newuser, "extrainfo_form": extrainfo_form
                }
 
     return render(request, template, context)
