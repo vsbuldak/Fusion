@@ -85,7 +85,7 @@ def hr_admin(request):
             emp = emp.filter(user_type="faculty")
         emp_present = emp.filter(user_status="PRESENT")
         emp_new = emp.filter(user_status="NEW")
-        context = {'emps': emp, "emp_presentt": emp_present, "emp_new": emp_new}
+        context = {'emps': emp, "emp_present": emp_present, "emp_new": emp_new}
         return render(request, template, context)
     else:
         return HttpResponse('Unauthorized', status=401)
@@ -255,7 +255,7 @@ def administrative_profile(request, username=None):
 
     response.update({'cpda': False, 'ltc': False,
                      'appraisal': True, 'leave': False})
-    work_assignemnt = work_assignemnt.objects.filter(
+    work_assignemnt = WorkAssignemnt.objects.filter(
         extra_info_id=pf).order_by('-start_date')
 
     context = {'user': user,
